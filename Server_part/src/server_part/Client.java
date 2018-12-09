@@ -31,11 +31,10 @@ public class Client implements Runnable
         private int port; 
 
 	// constructor to put ip address and port
-        public Client(int port,String name, int prioridad, String mensaje, String address) 
+        public Client(int port,String name, String mensaje, String address) 
 	{
             this.name = name;
             this.address = address; 
-            this.prioridad = prioridad;
             this.mensaje = mensaje;
             this.port = port;
 	}
@@ -46,7 +45,7 @@ public class Client implements Runnable
             socket = new Socket(address, port); 
             System.out.println("Connected"); 
             out = new DataOutputStream(socket.getOutputStream());
-            out.writeUTF(Integer.toString(prioridad)+","+Integer.toString(port)); //ver si puedo mandar una lista
+            out.writeUTF(this.mensaje+","+Integer.toString(port)); //ver si puedo mandar una lista
             out.flush();
             out.close();
             socket.close();

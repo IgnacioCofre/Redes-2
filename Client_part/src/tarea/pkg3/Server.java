@@ -25,7 +25,8 @@ public class Server implements Runnable
     private DataInputStream in	 = null; 
     private boolean server_alive = true;
     public boolean mensaje_recibido = false;
-    public boolean coordinador = true;
+    public boolean coordinador = false;
+    public boolean inicio_llamadas = false;     
     public int port;
     public int prioridad;
     public String name;
@@ -33,16 +34,18 @@ public class Server implements Runnable
     List <String> priori_port =new ArrayList<>();
 
     // constructor with port and name 
-    public Server(int port, String name, int prioridad) 
+    public Server(int port, String name, int prioridad, boolean inicio_llamadas) 
     {
         this.name = name;
         this.port = port;
         this.prioridad = prioridad;
+        this.inicio_llamadas = inicio_llamadas;
         
     }
 
     @Override
- public void run(){
+     
+    public void run(){
         // starts server and waits for a connection
         try{
 
@@ -57,7 +60,7 @@ public class Server implements Runnable
         
         while(server_alive){
             try{
-                while(!mensaje_recibido){
+                while(priori_port.size()<1){ //recibir todas las prioridades
                     socket = server.accept();
                     System.out.println("Client accepted");
                     // takes input from the client socket
@@ -71,18 +74,26 @@ public class Server implements Runnable
 
                     if ("prioridad".equals(list_messages[0])){
                         //[mensaje,prioridad,port]
-                        priori_port.add(list_messages[1]+","+list_messages[2]);
-                        if(Integer.parseInt(list_messages[1]) > prioridad){
-                            coordinador = false;
-                            //revisa si es inicialmente el coordinador
-                        }
+                        this.priori_port.add(list_messages[1]+","+list_messages[2]);
+                        System.out.println("Mesnsage recibido");
                     }        
                     else{
                         System.out.print("Header irreconocible");
-                    }
-                    
-                    
-                }
+                    } 
+                }       
+                System.out.println("lista de prioridades"+priori_port);
+                socket = server.accept();
+                System.out.println("Client accepted");
+                // takes input from the client socket
+                in = new DataInputStream(socket.getInputStream()); 
+                String line;
+                line = (String)in.readUTF();
+                System.out.println(line);
+                this.messages= line;
+                System.out.println("Mensaje recibido");
+                String[] list_messages = messages.split(",");
+                //elejir al primer coordinador
+                System.out.println(priori_port);
             }
             catch(IOException i){
                 System.out.println("Error al realizar la coneccion con el cliente");

@@ -26,14 +26,16 @@ public class Server_part {
         int prioridad = 2;
         List <String> ports = Arrays.asList("5001");
         String ip = "localhost";
-        Server server1 = new Server(port,"server 1",prioridad);
+        boolean inicio_llamadas = false;
+        Server server1 = new Server(port,"server 1",prioridad,inicio_llamadas);
         server1.start();
         Thread.sleep(4000);
         //public Client(int port, String name,  int prioridad, String mensaje, String address)
         //Se manda un mensaje inicial a todas las maquinas
         for (int i = 0; i< ports.size(); i++){
             try{
-                Client client1 = new Client(Integer.parseInt(ports.get(i)),"Client 1",prioridad,"prioridad",ip);
+                //message [port,"name client",message,ip]
+                Client client1 = new Client(Integer.parseInt(ports.get(i)),"Client 1","prioridad,"+Integer.toString(prioridad),ip);
                 client1.start();
             }
             catch(NumberFormatException a){
@@ -41,6 +43,7 @@ public class Server_part {
                 System.out.println(a);
             }
         }
+        
     } 
     
 }
