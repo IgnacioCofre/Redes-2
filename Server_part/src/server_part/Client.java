@@ -40,7 +40,7 @@ public class Client implements Runnable
 	}
         
     public void run(){ 
-                    // establish a connection 
+        // establish a connection 
         try{ 
             socket = new Socket(address, port); 
             System.out.println("Connected"); 
