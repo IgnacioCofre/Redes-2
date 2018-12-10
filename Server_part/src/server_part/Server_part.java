@@ -35,7 +35,7 @@ public class Server_part {
         for (int i = 0; i< ports.size(); i++){
             try{
                 //message [port,"name client",message,ip]
-                Client client1 = new Client(Integer.parseInt(ports.get(i)),"Client 1","prioridad,"+Integer.toString(prioridad),ip);
+                Client client1 = new Client(Integer.parseInt(ports.get(i)),"Client 1","prioridad,"+Integer.toString(prioridad)+","+Integer.toString(port),ip);
                 client1.start();
             }
             catch(NumberFormatException a){

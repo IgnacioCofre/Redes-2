@@ -45,7 +45,7 @@ public class Client implements Runnable
             socket = new Socket(address, port); 
             System.out.println("Connected"); 
             out = new DataOutputStream(socket.getOutputStream());
-            out.writeUTF(this.mensaje+","+Integer.toString(port)); //ver si puedo mandar una lista
+            out.writeUTF(this.mensaje); //ver si puedo mandar una lista
             out.flush();
             out.close();
             socket.close();
