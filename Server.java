@@ -29,6 +29,7 @@ public class Server implements Runnable
     public boolean inicio_llamadas = false; //si este server debe iniciar la coordinacion en la primera iteracion
     public int port;
     public int prioridad;
+    public int mensajes_port_priori = 0;
     public String ip = "localhost";
     public String name;
     public String messages;
@@ -53,9 +54,10 @@ public class Server implements Runnable
         try{
 
             server = new ServerSocket(port);
-            System.out.println("Server started");
 
-            System.out.println("Waiting for a client ...");
+            System.out.println("Servidor Iniciado");
+
+            System.out.println("Esperando por un cliente...");
         }
         catch(IOException i){
             System.out.println("No se pudo iniciar el server");
@@ -63,22 +65,22 @@ public class Server implements Runnable
 
         while(server_alive){
             try{
-                while(priori_port.size()<1){ //recibir todas las prioridades
-
+                while(mensajes_port_priori<3){ //recibir todas las prioridades
                     socket = server.accept();
 
-                    System.out.println("Client accepted");
+                    System.out.println("Cliente aceptado");
                     // takes input from the client socket
                     in = new DataInputStream(socket.getInputStream());
                     String line;
                     line = (String)in.readUTF();
-                    System.out.println(line);
                     this.messages= line;
                     System.out.println("Mensaje recibido");
                     String[] list_messages = messages.split(",");
                     String header = list_messages[0];
                     int prioridad_cliente = Integer.parseInt(list_messages[1]);
                     if ("prioridad".equals(header)){
+                        this.mensajes_port_priori++; //cantidad de mensajes que recivo pon la prioridad de las otras maquinas
+                        //se debe aclarar que no se escoje al coordinador mediante estas llamadas
                         if(prioridad_cliente >= this.prioridad){ //este if redundante es solo por precaucion
                             // solo se guardan las prioridades de las otras maquinas que sean mayores a lo de esta maquina
                             //[mensaje,prioridad,port]
@@ -89,11 +91,19 @@ public class Server implements Runnable
                         System.out.print("Header irreconocible");
                     }
                 }
-                if (inicio_llamadas){ //inicia la coordinacion, se elije al primer bully , solo se ejecuta una vez
-                        for (int i = 0; i< priori_port.size(); i++){
-                            int port_envio = Integer.parseInt(priori_port.get(i).split("")[1]);
+                if (inicio_llamadas & mensajes_port_priori == 3){ //inicia la coordinacion, se elije al primer bully , solo se ejecuta una vez
 
-                            Client client1 = new Client(port_envio,"Client 1","coordinacion,"+Integer.toString(port)+","+Integer.toString(prioridad),ip);
+                        try{
+                          Thread.sleep(20000);
+                        }catch(InterruptedException e){
+                          System.out.println(e);
+                        }
+                        System.out.println("Se realiza el inicio de llamadas\n");
+                        System.out.println("lista de prioridades: "+priori_port+"\n");
+                        for (int i = 0; i< priori_port.size(); i++){
+                            int port_envio = Integer.parseInt(priori_port.get(i).split(",")[1]);
+                            //[coordinacion,port,prioridad]
+                            Client client1 = new Client(port_envio,"Client 2","coordinacion,"+Integer.toString(port)+","+Integer.toString(prioridad),ip);
                             client1.start();
                         }
 
@@ -101,9 +111,9 @@ public class Server implements Runnable
                     System.out.println("Se realizo la cordinacion inicial del bully");
                 }
 
-                while(server_alive){ //manejar la coordinación
-                    System.out.println("lista de prioridades"+priori_port);
-                    socket.setSoTimeout(tiempo_espera); //tiempo de espera por una respuesta
+                while(server_alive & mensajes_port_priori ==3){ //manejar la coordinación
+                    System.out.println("while2");
+                    server.setSoTimeout(tiempo_espera);; //tiempo de espera por una respuesta
                     socket = server.accept();
                     System.out.println("Client accepted");
                     // takes input from the client socket
@@ -127,7 +137,7 @@ public class Server implements Runnable
                             for (int i = 0; i< priori_port.size(); i++){
                                 //cada ves que llega un mensaje de coordinacion, se otro  mensaje de
                                 //coordinacion a los que tengan mayor prioridad que este server
-                                int port_envio = Integer.parseInt(priori_port.get(i).split("")[1]);
+                                int port_envio = Integer.parseInt(priori_port.get(i).split(",")[1]);
                                 Client client3 = new Client(port_envio,"Client 3","coordinacion,"+Integer.toString(port)+","+Integer.toString(prioridad),ip);
                                 client3.start();
                             }
@@ -136,14 +146,14 @@ public class Server implements Runnable
                         tiempo_espera = 8000;
                     }
 
-
                     if ("ok".equals(list_messages[0]) ){
                         this.coordinador = false;
                         this.tiempo_espera = 0;
+                        System.out.println("no es coordinador\n");
                     }
 
-                    else{
-                        System.out.print("Header irreconocible");
+                    if(!"coordinacion".equals(list_messages[0]) & !"ok".equals(list_messages[0])){
+                        System.out.print("Header irreconocible:"+list_messages[0]+"\n");
                     }
                 }
 

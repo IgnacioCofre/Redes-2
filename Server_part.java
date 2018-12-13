@@ -59,10 +59,10 @@ public class Server_part {
         String ip = "localhost";
         Server server1 = new Server(port,"server",prioridad,inicio_llamadas);
         server1.start();
-        Thread.sleep(4000);
+        Thread.sleep(2000);
         System.out.println("Presione Start cuando esten todos los servidores incializados");
         String start = scan.nextLine();
-
+        Thread.sleep(8000);
         //public Client(int port, String name,  int prioridad, String mensaje, String address)
         //Se manda un mensaje inicial a todas las maquinas
         for (int i = 0; i< ports.size(); i++){
