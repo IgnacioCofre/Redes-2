@@ -28,14 +28,16 @@ public class Client implements Runnable
         private String name;
         private String mensaje;
         private int port;
+        private int port_salida;
 
 	// constructor to put ip address and port
-        public Client(int port,String name, String mensaje, String address)
+        public Client(int port,int port_salida, String name, String mensaje, String address)
 	{
             this.name = name;
             this.address = address;
             this.mensaje = mensaje;
             this.port = port;
+            this.port_salida = port_salida;
 	}
 
     public void run(){
@@ -49,13 +51,37 @@ public class Client implements Runnable
             out.close();
             socket.close();
         }
+        catch(ConnectException p){
+            try{
+              System.out.println("error de coneccion con el port: "+port);
+              //me mando un mensaje a mi mismo
+              socket = new Socket(address, port_salida);
+              System.out.println("Se envia un aviso al port_salida: "+Integer.toString(port_salida));
+              out = new DataOutputStream(socket.getOutputStream());
+              out.writeUTF("coordinacion,"+Integer.toString(port_salida));
+              out.flush();
+              out.close();
+              socket.close();
+            }
+            catch(ConnectException ex){
+              System.out.println("ESTE ES UN ERROR FATAL PORFAVOR DESCONECTE SU COMPUTADOR INMEDIATAMENTE!!!!! :O");
+            }
+            catch(UnknownHostException u){
+                System.out.println("Server desconocido, cliente");
+            }
+            catch(IOException i){
+                System.out.println("error IO, cliente");
+            }
+
+
+        }
         catch(UnknownHostException u)
         {
-            System.out.println(u);
+            System.out.println("Server desconocido, cliente");
         }
         catch(IOException i)
         {
-            System.out.println(i);
+            System.out.println("error IO, cliente");
         }
 
     }

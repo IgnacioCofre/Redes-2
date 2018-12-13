@@ -57,7 +57,8 @@ public class Server_part {
         }
 
         String ip = "localhost";
-        Server server1 = new Server(port,"server",prioridad,inicio_llamadas);
+        //public Server(int port, List ports_list, String name, int prioridad, boolean inicio_llamadas)
+        Server server1 = new Server(port,ports,"server",prioridad,inicio_llamadas);
         server1.start();
         Thread.sleep(2000);
         System.out.println("Presione Start cuando esten todos los servidores incializados");
@@ -68,7 +69,7 @@ public class Server_part {
         for (int i = 0; i< ports.size(); i++){
             try{
                 //message [port,"name client",message,ip]
-                Client client1 = new Client(Integer.parseInt(ports.get(i)),"Client 1","prioridad,"+Integer.toString(prioridad)+","+Integer.toString(port),ip);
+                Client client1 = new Client(Integer.parseInt(ports.get(i)),port,"Client 1","prioridad,"+Integer.toString(prioridad)+","+Integer.toString(port),ip);
                 client1.start();
             }
             catch(NumberFormatException a){
