@@ -61,9 +61,11 @@ public class Server_part {
         Server server1 = new Server(port,ports,"server",prioridad,inicio_llamadas);
         server1.start();
         Thread.sleep(2000);
-        System.out.println("Presione Start cuando esten todos los servidores incializados");
+        System.out.println("Presione ENTER cuando esten todos los servidores incializados");
         String start = scan.nextLine();
+        System.out.println("Tiene 8 segundos para iniciar los demas servidores");
         Thread.sleep(8000);
+
         //public Client(int port, String name,  int prioridad, String mensaje, String address)
         //Se manda un mensaje inicial a todas las maquinas
         for (int i = 0; i< ports.size(); i++){

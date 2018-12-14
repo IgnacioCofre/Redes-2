@@ -30,8 +30,8 @@ public class Server implements Runnable
     public int port;
     public int prioridad;
     public int mensajes_port_priori = 0;
-    public int port_jefe = 0;
-    public int numero_maquinas = 0;//se debe cambiar esto para probar con mas maquinas
+    public int port_jefe = 0; //de ser inicializado con 0
+    public int numero_maquinas = 3;//se debe cambiar esto para probar con mas maquinas [Maquinas totales -1]
     public String ip = "localhost";
     public String name;
     public String messages;
@@ -91,7 +91,7 @@ public class Server implements Runnable
                         }
                     }
                     else{
-                        System.out.print("Header irreconocible");
+                        System.out.print("Header irreconocible: "+list_messages[0]);
                     }
                 }
                 if (inicio_llamadas & mensajes_port_priori == numero_maquinas){ //inicia la coordinacion, se elije al primer bully , solo se ejecuta una vez
@@ -132,7 +132,7 @@ public class Server implements Runnable
                         //[mensaje,prioridad,port]
                         //list_menssages = [header,prioridad,port]
                         int port_llegada = Integer.parseInt(list_messages[1]);
-                        if (port_llegada != port){
+                        if (port_llegada != port){ //se manda un mensaje de ok
                             System.out.println("port llegada"+port_llegada);
                             System.out.println("port server"+port);
                             int prioridad_llegada = Integer.parseInt(list_messages[2]);
@@ -169,7 +169,6 @@ public class Server implements Runnable
                         System.out.println("EL port del servidor coordinador es: "+list_messages[2]);
                         //poner una condicion que permita saber que ya hay coordinacion
                     }
-                    //(!"coordinacion".equals(list_messages[0]) & !"ok".equals(list_messages[0]) & !"jefe".equals(list_messages[0]))
                     else {
                         System.out.print("Header irreconocible:"+list_messages[0]+"\n");
                     }
@@ -179,11 +178,13 @@ public class Server implements Runnable
                 System.out.println("Se escoje este servidor como coordinador");
                 this.coordinador = true;
                 this.tiempo_espera = 0;
+                this.port_jefe = port;
                 //se envian la confirmacion a todas las maquinas
                 for (int i = 0; i< ports_list.size(); i++){
                     try{
                         //message [port,"name client",message,ip]
-                        if (!dead_server.contains(priori_port.get(i))){
+                        if (!dead_server.contains(ports_list.get(i)) & !Integer.toString(port).equals(ports_list.get(i))){ //se verifica que no se envia else {
+                          //mensaje a un server muerto y a si mismo
                             Client client1 = new Client(Integer.parseInt(ports_list.get(i)),port,"Client 1","jefe,"+Integer.toString(prioridad)+","+Integer.toString(port),ip);
                             client1.start();
                         }
@@ -191,7 +192,6 @@ public class Server implements Runnable
                     catch(NumberFormatException a){
                         System.out.println("Error al enviar un cliente al port "+ports_list.get(i));
                         System.out.println(a);
-                        //
                     }
                 }
 
