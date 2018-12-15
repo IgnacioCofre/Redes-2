@@ -1,10 +1,13 @@
-all: Client.class Server.class Server_part.class
+all: Client.class Server.class Doctor.class Server_part.class 
 
 Client.class: Client.java
 	javac Client.java
 
 Server.class: Server.java
 	javac Server.java
+
+Doctor.class: Doctor.java
+	javac Doctor.java
 
 Server_part.class: Server_part.java
 	javac -classpath .:json-simple-1.1.1.jar Server_part.java

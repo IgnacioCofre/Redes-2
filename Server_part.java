@@ -37,12 +37,42 @@ public class Server_part {
         List <String> ports;
         String line;
         JSONParser par = new JSONParser();
+        ArrayList<Doctor> Doctores = new ArrayList<Doctor>();
+        ArrayList<Doctor> Enfermeros = new ArrayList<Doctor>();
+        ArrayList<Doctor> Paramedicos = new ArrayList<Doctor>();
+        ArrayList<Paciente> Pacientes = new ArrayList<Paciente>();
         try{
             Object cosa = par.parse(new FileReader("Doctores.json"));
             JSONObject jsonObject = (JSONObject) cosa;
             JSONArray docs = (JSONArray) jsonObject.get("Doctor");
-            System.out.println("holi");
-
+            int i;
+            String a = "Doctor";
+            for(i = 0; i < docs.size(); i++){
+                JSONObject doctor = (JSONObject) docs.get(i);
+                Doctor theDoctor = new Doctor((Long)doctor.get("id"),(String)doctor.get("nombre"),(String)doctor.get("apellido"),(Long)doctor.get("estudios"),(Long)doctor.get("experiencia"),a);
+                Doctores.add(theDoctor);
+            }
+            JSONArray enfs = (JSONArray) jsonObject.get("Enfermero");
+            a = "Enfermero";
+            for(i = 0; i < enfs.size(); i++){
+                JSONObject enfermero = (JSONObject) enfs.get(i);
+                Doctor elEnfermero = new Doctor((Long) enfermero.get("id"), (String) enfermero.get("nombre"), (String) enfermero.get("apellido"), (Long) enfermero.get("estudios"), (Long) enfermero.get("experiencia"), a);
+                Enfermeros.add(elEnfermero);
+            }
+            JSONArray param = (JSONArray) jsonObject.get("Paramedico");
+            a = "Paramedico";
+            for (i = 0; i < param.size(); i++){
+                JSONObject paramedico = (JSONObject) param.get(i);
+                Doctor unParamedico = new Doctor((Long) paramedico.get("id"), (String) paramedico.get("nombre"), (String) paramedico.get("apellido"), (Long) paramedico.get("estudios"), (Long) paramedico.get("experiencia"), a);
+                Paramedicos.add(unParamedico);
+            }
+            cosa = par.parse(new FileReader("Pacientes.json"));
+            jsonObject = (JSONObject) cosa;
+            JSONArray paci = (JSONArray) jsonObject.get("Paciente");
+            for (i = 0; i < paci.size() ; i++){
+                JSONObject id_param = (jsonObject) paci.get(i);
+                
+            }
         }
         catch(FileNotFoundException e){
         // manejo de error no esta el archivo
