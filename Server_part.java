@@ -4,13 +4,20 @@
  * and open the template in the editor.
  */
 //package server_part;
-
+import java.lang.*;
 import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Scanner;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+
+
 /**
  *
  * @author Ignacio Cofre
@@ -19,6 +26,7 @@ public class Server_part {
      /**
      * @param args the command line arguments
      * @throws java.lang.InterruptedException
+     * 
      */
     public static void main(String args[]) throws InterruptedException
     {
@@ -28,8 +36,27 @@ public class Server_part {
         boolean inicio_llamadas = false;
         List <String> ports;
         String line;
+        JSONParser par = new JSONParser();
+        try{
+            Object cosa = par.parse(new FileReader("Doctores.json"));
+            JSONObject jsonObject = (JSONObject) cosa;
+            JSONArray docs = (JSONArray) jsonObject.get("Doctor");
+            System.out.println("holi");
 
+        }
+        catch(FileNotFoundException e){
+        // manejo de error no esta el archivo
+        }
+        catch(IOException e){
+        // manejo de error malo el json
+        }
+        catch(ParseException e){   
+        // manejo de error  parseo malo
+        }
+        
+       
         System.out.print("Ingrese el port de este server: \n");
+        
         try{
             port = scan.nextInt();
         }catch(NumberFormatException nfe){
