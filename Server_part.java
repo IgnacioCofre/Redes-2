@@ -170,7 +170,7 @@ public class Server_part {
         }
         else{
             inicio_llamadas = false;
-            System.out.println("Este servidor no iniciara las llamadas");
+            System.out.println("Este servidor no iniciara las llamadas");}
 
 
         for(int i = 0 ; i < Doctores.size() ; i++){
@@ -216,3 +216,4 @@ public class Server_part {
         }
     }
 }
+
