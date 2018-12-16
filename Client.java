@@ -25,25 +25,25 @@ public class Client implements Runnable
       	private Socket socket		 = null;
       	private DataOutputStream out	 = null;
         private String address;
+        private int port = 6666;
         private String name;
         private String mensaje;
-        private int port;
-        private int port_salida;
+        private String address_inicio;
+        private String address_fin;
 
 	// constructor to put ip address and port
-        public Client(int port,int port_salida, String name, String mensaje, String address)
+        public Client(String name, String mensaje, String address_inicio, String address_fin)
 	{
             this.name = name;
-            this.address = address;
             this.mensaje = mensaje;
-            this.port = port;
-            this.port_salida = port_salida;
+            this.address_inicio = address_inicio;
+            this.address_fin = address_fin;
 	}
 
     public void run(){
         // establish a connection
         try{
-            socket = new Socket(address, port);
+            socket = new Socket(address_fin, port);
             System.out.println("Connected");
             out = new DataOutputStream(socket.getOutputStream());
             out.writeUTF(this.mensaje); //ver si puedo mandar una lista
@@ -53,12 +53,12 @@ public class Client implements Runnable
         }
         catch(ConnectException p){
             try{
-              System.out.println("error de coneccion con el port: "+port);
+              System.out.println("error de coneccion con la ip: "+address_fin);
               //me mando un mensaje a mi mismo
-              socket = new Socket(address, port_salida);
-              System.out.println("Se envia un aviso al port_salida: "+Integer.toString(port_salida));
+              socket = new Socket(address_inicio, port);
+              System.out.println("Se envia un aviso a la ip: "+address_inicio);
               out = new DataOutputStream(socket.getOutputStream());
-              out.writeUTF("coordinacion,"+Integer.toString(port_salida));
+              out.writeUTF("coordinacion,"+address_inicio);
               out.flush();
               out.close();
               socket.close();
@@ -72,8 +72,6 @@ public class Client implements Runnable
             catch(IOException i){
                 System.out.println("error IO, cliente");
             }
-
-
         }
         catch(UnknownHostException u)
         {
@@ -81,13 +79,13 @@ public class Client implements Runnable
         }
         catch(IOException i)
         {
-            System.out.println("error IO, cliente");
+            System.out.println("error IO, cliente "+address_fin+" , "+Integer.toString(port));
         }
 
     }
 
     public void start(){
-        System.out.println("Starting client" +  name+" in port "+Integer.toString(port)+" to server ip " + address);
+        System.out.println("Starting client" +  name+" in port "+Integer.toString(port)+" to server ip " + address_fin);
         if (c == null) {
             c = new Thread (this, name);
             //Integer.toString(port)

@@ -26,28 +26,32 @@ public class Server implements Runnable
     private static boolean server_alive = true;
     public static boolean mensaje_recibido = false;
     public boolean coordinador = false;//indica si este servidor es el coordinador
+    public boolean proceso_coordinacion = true;//indica si se esta realizando el proceso de eleccion de coordinador
     public boolean inicio_llamadas = false; //si este server debe iniciar la coordinacion en la primera iteracion
     public int port;
     public int prioridad;
-    public int mensajes_port_priori = 0;
-    public int port_jefe = 0; //de ser inicializado con 0
+    public int mensajes_port_priori = 0; //de ser inicializado con 0
+    public String ip_jefe = "";
     public int numero_maquinas = 3;//se debe cambiar esto para probar con mas maquinas [Maquinas totales -1]
-    public String ip = "localhost";
+    public String ip;
     public String name;
     public String messages;
-    List <String> priori_port =new ArrayList<>(); //solo almacena los port con las prioridades mayores a la prioridad de este server
-    List <String> ports_list = new ArrayList<>(); //lista de todos los ports
+    //List <String> priori_port =new ArrayList<>(); //solo almacena los port con las prioridades mayores a la prioridad de este server
+    List <String> priori_ip =new ArrayList<>();
+    List <String> ips = new ArrayList<>(); //lista de todos los ports
     List <String> dead_server = new ArrayList<>(); //lista de servidores que ya no se encuentran funcionando
     public int tiempo_espera = 0; // si es 0 espera infinito
 
     // constructor with port and name
-    public Server(int port, List <String> ports_list, String name, int prioridad, boolean inicio_llamadas)
+    //new Server("server",ip,prioridad,inicio_llamadas);
+    public Server(String name, String ip, int prioridad, boolean inicio_llamadas, List <String> ips)
     {
+        this.ip = ip;
         this.name = name;
-        this.port = port;
+        this.port = 6666;
         this.prioridad = prioridad;
         this.inicio_llamadas = inicio_llamadas;
-        this.ports_list = ports_list;
+        this.ips = ips;
     }
 
     @Override
@@ -80,18 +84,19 @@ public class Server implements Runnable
                     System.out.println("Mensaje recibido");
                     String[] list_messages = messages.split(",");
                     String header = list_messages[0];
-                    int prioridad_cliente = Integer.parseInt(list_messages[1]);
+
                     if ("prioridad".equals(header)){
-                        this.mensajes_port_priori++; //cantidad de mensajes que recibo pon la prioridad de las otras maquinas
+                        int prioridad_cliente = Integer.parseInt(list_messages[1]);
+                        this.mensajes_port_priori++; //cantidad de mensajes que recivo pon la prioridad de las otras maquinas
                         //se debe aclarar que no se escoje al coordinador mediante estas llamadas
                         if(prioridad_cliente >= this.prioridad){ //este if redundante es solo por precaucion
                             // solo se guardan las prioridades de las otras maquinas que sean mayores a lo de esta maquina
-                            //[mensaje,prioridad,port]
-                            this.priori_port.add(prioridad_cliente+","+list_messages[2]); //guarda la prioridad y el port del cliente
+                            //[mensaje,prioridad,ip]
+                            this.priori_ip.add(prioridad_cliente+","+list_messages[2]); //guarda la prioridad y el port del cliente
                         }
                     }
                     else{
-                        System.out.print("Header irreconocible: "+list_messages[0]);
+                        System.out.println("Header irreconocible: "+list_messages[0]);
                     }
                 }
                 if (inicio_llamadas & mensajes_port_priori == numero_maquinas){ //inicia la coordinacion, se elije al primer bully , solo se ejecuta una vez
@@ -102,11 +107,12 @@ public class Server implements Runnable
                           System.out.println(e);
                         }
                         System.out.println("Se realiza el inicio de llamadas\n");
-                        System.out.println("lista de prioridades: "+priori_port+"\n");
-                        for (int i = 0; i< priori_port.size(); i++){
-                            int port_envio = Integer.parseInt(priori_port.get(i).split(",")[1]);
-                            //[coordinacion,port,prioridad]
-                            Client client1 = new Client(port_envio,port,"Client 2","coordinacion,"+Integer.toString(port)+","+Integer.toString(prioridad),ip);
+                        System.out.println("lista de prioridades: "+priori_ip+"\n");
+                        for (int i = 0; i< priori_ip.size(); i++){
+                            String ip_envio = priori_ip.get(i).split(",")[1];
+                            //public Client(String name, String mensaje, String address_inicio, String address_fin)
+                            //[coordinacion,ip,prioridad]
+                            Client client1 = new Client("Client 2","coordinacion,"+ip+","+Integer.toString(prioridad),ip,ip_envio);
                             client1.start();
                         }
 
@@ -129,44 +135,49 @@ public class Server implements Runnable
                     String[] list_messages = messages.split(",");
 
                     if ("coordinacion".equals(list_messages[0]) ){
-                        //[mensaje,prioridad,port]
-                        //list_menssages = [header,prioridad,port]
-                        int port_llegada = Integer.parseInt(list_messages[1]);
-                        if (port_llegada != port){ //se manda un mensaje de ok
-                            System.out.println("port llegada"+port_llegada);
-                            System.out.println("port server"+port);
+                        //[coordinacion,ip,prioridad]
+                        //list_menssages = [coordinacion,ip,prioridad]
+                        String ip_llegada = list_messages[1];
+                        if (!ip_llegada.equals(ip)){ //se manda un mensaje de ok
+                            System.out.println("ip llegada"+ip_llegada);
                             int prioridad_llegada = Integer.parseInt(list_messages[2]);
-                            Client client2 = new Client(port_llegada,port,"Client 2","ok,"+Integer.toString(prioridad),ip);
+                            //public Client(String name, String mensaje, String address_inicio, String address_fin)
+
+                            Client client2 = new Client("Client 2","ok,"+Integer.toString(prioridad),ip,ip_llegada);
                             client2.start();
                         }
-                        if(!dead_server.contains(port_jefe)){ //solo se agrega una vez el port del coordinador caido
-                          dead_server.add(Integer.toString(port_jefe));
+                        if(!dead_server.contains(ip_jefe)){ //solo se agrega una vez el port del coordinador caido
+                          dead_server.add(ip_jefe);
                           System.out.println("Se ha agregado un nuevo servidor muerto a la a lista");
                         }
 
-                        for (int i = 0; i< priori_port.size(); i++){
+                        for (int i = 0; i< priori_ip.size(); i++){
                             //cada ves que llega un mensaje de coordinacion, se otro  mensaje de
                             //coordinacion a los que tengan mayor prioridad que este server
-                            if (!dead_server.contains(priori_port.get(i))){ //no se le vuelven a enviar mensajes a los servidores ya caidos
-                              int port_envio = Integer.parseInt(priori_port.get(i).split(",")[1]);
-                              Client client3 = new Client(port_envio,port,"Client 3","coordinacion,"+Integer.toString(port)+","+Integer.toString(prioridad),ip);
+                            if (!dead_server.contains(priori_ip.get(i))){ //no se le vuelven a enviar mensajes a los servidores ya caidos
+                              String ip_envio = priori_ip.get(i).split(",")[1];
+                              //public Client(String name, String mensaje, String address_inicio, String address_fin)
+                              Client client3 = new Client("Client 3","coordinacion,"+ip+","+Integer.toString(prioridad),ip,ip_envio);
                               client3.start();
                             }
                         }
                         //setear un tiempo de
-                        tiempo_espera = 8000;
+                        this.proceso_coordinacion = true;
+                        tiempo_espera = 10000;
                     }
-
+                    //"ok,"+Integer.toString(prioridad)
                     else if ("ok".equals(list_messages[0])){
                         this.coordinador = false;
-                        this.tiempo_espera = 0;
+                        this.tiempo_espera = 18000;
                         System.out.println("no es coordinador\n");
                     }
 
                     else if("jefe".equals(list_messages[0])){
                         //["jefe,"+Integer.toString(prioridad)+","+Integer.toString(port)]
-                        this.port_jefe = Integer.parseInt(list_messages[2]);
-                        System.out.println("EL port del servidor coordinador es: "+list_messages[2]);
+                        this.ip_jefe = list_messages[2];
+                        this.proceso_coordinacion = false;
+                        System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
+
                         //poner una condicion que permita saber que ya hay coordinacion
                     }
                     else {
@@ -175,26 +186,34 @@ public class Server implements Runnable
                 }
             }
             catch(SocketTimeoutException b){ //en caso de que no llegue ningun mensaje en el tiempo de espera
-                System.out.println("Se escoje este servidor como coordinador");
-                this.coordinador = true;
-                this.tiempo_espera = 0;
-                this.port_jefe = port;
-                //se envian la confirmacion a todas las maquinas
-                for (int i = 0; i< ports_list.size(); i++){
-                    try{
-                        //message [port,"name client",message,ip]
-                        if (!dead_server.contains(ports_list.get(i)) & !Integer.toString(port).equals(ports_list.get(i))){ //se verifica que no se envia else {
-                          //mensaje a un server muerto y a si mismo
-                            Client client1 = new Client(Integer.parseInt(ports_list.get(i)),port,"Client 1","jefe,"+Integer.toString(prioridad)+","+Integer.toString(port),ip);
-                            client1.start();
-                        }
-                    }
-                    catch(NumberFormatException a){
-                        System.out.println("Error al enviar un cliente al port "+ports_list.get(i));
-                        System.out.println(a);
-                    }
-                }
+                if (proceso_coordinacion){
+                  System.out.println("Se escoje este servidor como coordinador");
+                  this.coordinador = true;
+                  this.tiempo_espera = 0;
+                  this.ip_jefe = ip;
+                  //se envian la confirmacion a todas las maquinas
+                  for (int i = 0; i< ips.size(); i++){
+                      try{
+                          //message [jefe,prioridad,ip]
+                          if (!dead_server.contains(ips.get(i)) & !ip.equals(ips.get(i))){ //se verifica que no se envia else {
+                            //mensaje a un server muerto y a si mismo
+                            //public Client(String name, String mensaje, String address_inicio, String address_fin)
+                              Client client1 = new Client("Client 1","jefe,"+Integer.toString(prioridad)+","+ip,ip,ips.get(i));
+                              client1.start();
+                          }
+                      }
+                      catch(NumberFormatException a){
+                          System.out.println("Error al enviar un cliente al port "+ips.get(i));
+                          System.out.println(a);
+                      }
+                  }
 
+                  this.proceso_coordinacion = false;
+                }
+                else{
+                  System.out.println("Se realiza otra llamada al servidor coordinador");
+                  //XAVI MEN TIENES QUE REENVIAR EL MENSAJE ACA!!!!
+                }
             }
             catch(IOException i){
                 System.out.println("Error al realizar la coneccion con el cliente");
@@ -215,7 +234,7 @@ public class Server implements Runnable
     }
 
     public void start(){
-        System.out.println("Starting " +  name+" in port "+Integer.toString(port));
+        System.out.println("Starting " +  name+" in port 6666");
         if (s == null) {
             s = new Thread (this, name);
             //Integer.toString(port)
