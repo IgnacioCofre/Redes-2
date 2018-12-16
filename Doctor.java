@@ -20,23 +20,26 @@ public class Doctor {
         this.tipo = tipo;
     }
 
-    public int GetId(){
+    public long getId(){
         return this.id;
     }
-    public String GetNombre(){
+    public String getNombre(){
         return this.nombre;
-    }    //hacer los getters UnU 
-    public String GetApellido(){
+    }    
+    public String getApellido(){
         return this.apellido;
     } 
-    public int GetEstudios(){
+    public long getEstudios(){
         return this.estudios;
     }
-    public int GetExperiencia(){
+    public long getExperiencia(){
         return this.experiencia;
     }
-    public String GetTipo(){
+    public String getTipo(){
         return this.tipo;
+    }
+    public long getPrioridad(){
+        return this.estudios+this.experiencia;
     }
 
 }

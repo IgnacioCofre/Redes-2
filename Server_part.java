@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Scanner;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,6 +41,7 @@ public class Server_part {
         ArrayList<Doctor> Enfermeros = new ArrayList<Doctor>();
         ArrayList<Doctor> Paramedicos = new ArrayList<Doctor>();
         ArrayList<Paciente> Pacientes = new ArrayList<Paciente>();
+        ArrayList<Requerimientos> Requirements = new ArrayList<Requerimientos>();
         try{
             Object cosa = par.parse(new FileReader("Doctores.json"));
             JSONObject jsonObject = (JSONObject) cosa;
@@ -66,21 +67,97 @@ public class Server_part {
                 Doctor unParamedico = new Doctor((Long) paramedico.get("id"), (String) paramedico.get("nombre"), (String) paramedico.get("apellido"), (Long) paramedico.get("estudios"), (Long) paramedico.get("experiencia"), a);
                 Paramedicos.add(unParamedico);
             }
+            
+
+
+
             cosa = par.parse(new FileReader("Pacientes.json"));
             jsonObject = (JSONObject) cosa;
             JSONArray paci = (JSONArray) jsonObject.get("Paciente");
             for (i = 0; i < paci.size() ; i++){
-                JSONObject id_param = (jsonObject) paci.get(i);
+                JSONObject paciente = (JSONObject) paci.get(i);
+                JSONArray datos = (JSONArray) paciente.get("datos personales");
+                JSONObject dato = (JSONObject) datos.get(0);
+                JSONArray sick = (JSONArray) paciente.get("enfermedades");
+                String [] enfermedades = new String[sick.size()];
+                for(int j = 0; j< sick.size(); j++){
+                    enfermedades[j] = (String) sick.get(j);
+                }
+                JSONArray tratamientos = (JSONArray) paciente.get("tratamientos/procedimientos");
+                JSONObject asignados = (JSONObject) tratamientos.get(0);
+                JSONArray asignado = (JSONArray) asignados.get("asignados");
+                JSONObject completados = (JSONObject) tratamientos.get(1);
+                JSONArray completado = (JSONArray) completados.get("completados");
+                String [] trata_asignado = new String[asignado.size()];
+                String [] trata_completado = new String[completado.size()];
+                for(int j = 0 ; j < asignado.size() ; j++){
+                    trata_asignado[j] = (String) asignado.get(j);
+                }
+                for(int j = 0; j < completado.size() ; j++){
+                    trata_completado[j] = (String) completado.get(j);
+                }
+
+
+                JSONArray examenes = (JSONArray) paciente.get("examenes");
+                JSONObject realizados = (JSONObject) examenes.get(0);
+                JSONArray realizado = (JSONArray) realizados.get("realizados");
+                JSONObject nRealizados = (JSONObject) examenes.get(1);
+                JSONArray nRealizado = (JSONArray) nRealizados.get("no realizados");
+                String [] examen_realizados = new String[realizado.size()];
+                String [] examen_no_realizados = new String[nRealizado.size()];
+                for(int j = 0; j < realizado.size() ; j++){
+                    examen_realizados[j] = (String) realizado.get(j);
+                }
+                for(int j = 0; j < nRealizado.size(); j++){
+                    examen_no_realizados[j] = (String) nRealizado.get(j);
+                }
                 
+                JSONArray medicamentos = (JSONArray) paciente.get("medicamentos");
+                JSONObject recetados = (JSONObject) medicamentos.get(0);
+                JSONArray recetado = (JSONArray) recetados.get("recetados");
+                JSONObject suministrados = (JSONObject) medicamentos.get(1);
+                JSONArray suministrado = (JSONArray) suministrados.get("suministrados");
+                String [] medicamentos_recetados = new String[recetado.size()];
+                String [] medicamentos_suministrados = new String[suministrado.size()];
+                for(int j = 0; j < recetado.size();j++){
+                    medicamentos_recetados[j] = (String) recetado.get(j);
+                }    
+                for(int j = 0; j < suministrado.size();j++){
+                    medicamentos_suministrados[j] = (String) suministrado.get(j);
+                }
+
+                Paciente elPaciente = new Paciente((Long) paciente.get("paciente_id"), (String) dato.get("nombre"), (String) dato.get("rut"), (Long) dato.get("edad"), enfermedades, trata_asignado, trata_completado, examen_realizados, examen_no_realizados, medicamentos_suministrados, medicamentos_recetados);
+                Pacientes.add(elPaciente);
             }
+
+            cosa = par.parse(new FileReader("Requerimientos.json"));
+            jsonObject = (JSONObject) cosa;
+            JSONArray requi = (JSONArray) jsonObject.get("requerimientos");
+            for( i = 0 ; i < requi.size() ; i++){
+                JSONObject requerimiento = (JSONObject) requi.get(i);
+                JSONArray lista_pacientes = (JSONArray) requerimiento.get("pacientes");
+                Map<String, String> requerim;
+                requerim = new HashMap<>();
+                for (int j = 0 ; j < lista_pacientes.size() ; j++){
+                    JSONObject proce_paciente = (JSONObject) lista_pacientes.get(j);
+                    requerim.put( proce_paciente.keySet().toArray()[0].toString() ,(String) proce_paciente.get(proce_paciente.keySet().toArray()[0]));
+                }
+                Requerimientos elRequerimiento = new Requerimientos( requerimiento.get("id").toString(), (String) requerimiento.get("cargo"), requerim);
+                Requirements.add(elRequerimiento);
+            }
+            
+
         }
         catch(FileNotFoundException e){
+            System.out.println("No se Encuentra el Archivo");
         // manejo de error no esta el archivo
         }
         catch(IOException e){
+            System.out.println("El Json esta mal parseado");
         // manejo de error malo el json
         }
-        catch(ParseException e){   
+        catch(ParseException e){
+            System.out.println("Mal Parseo");
         // manejo de error  parseo malo
         }
         
@@ -92,13 +169,20 @@ public class Server_part {
         }catch(NumberFormatException nfe){
             System.err.println("Invalid Format!");
         }
-
+        
+        for(int i = 0 ; i < Doctores.size() ; i++){
+            if(prioridad < Doctores.get(i).getPrioridad()){
+                prioridad = (int) Doctores.get(i).getPrioridad();
+                System.out.println( Doctores.get(i).getPrioridad() );
+            }
+        }
+        /*
         System.out.print("Ingrese la prioridad de este server: \n"); //esto despues debe ser automatico
         try{
             prioridad = scan.nextInt();
         }catch(NumberFormatException nfe){
             System.err.println("Invalid Format!");
-        }
+        }*/
         scan.nextLine();
 
         System.out.print("Ingrese los ports de las demas maquinas separados por una coma:\n");
