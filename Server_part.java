@@ -158,7 +158,7 @@ public class Server_part {
         // manejo de error malo el json
         }
         catch(ParseException e){
-            System.out.println("Mal Parseo");
+            System.out.println("Mal Parseo UnU");
         // manejo de error  parseo malo
         }
 
