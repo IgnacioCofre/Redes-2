@@ -173,18 +173,10 @@ public class Server_part {
         for(int i = 0 ; i < Doctores.size() ; i++){
             if(prioridad < Doctores.get(i).getPrioridad()){
                 prioridad = (int) Doctores.get(i).getPrioridad();
-                System.out.println( Doctores.get(i).getPrioridad() );
             }
         }
-        /*
-        System.out.print("Ingrese la prioridad de este server: \n"); //esto despues debe ser automatico
-        try{
-            prioridad = scan.nextInt();
-        }catch(NumberFormatException nfe){
-            System.err.println("Invalid Format!");
-        }*/
+        
         scan.nextLine();
-
         System.out.print("Ingrese los ports de las demas maquinas separados por una coma:\n");
         line = scan.nextLine();
         ports = Arrays.asList(line.split(","));
