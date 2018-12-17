@@ -187,6 +187,7 @@ public class Server implements Runnable
                         //["jefe,"+Integer.toString(prioridad)+","+Integer.toString(port)]
                         this.ip_jefe = list_messages[2];
                         this.proceso_coordinacion = false;
+                        this.coordinador = false;
                         System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
                         // se envia el mensaje de los requerimientos al coordinador
                         //mensaje [requerimiento,]
