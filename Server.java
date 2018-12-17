@@ -100,7 +100,7 @@ public class Server implements Runnable
                         int prioridad_cliente = Integer.parseInt(list_messages[1]);
                         this.mensajes_port_priori++; //cantidad de mensajes que recivo pon la prioridad de las otras maquinas
                         //se debe aclarar que no se escoje al coordinador mediante estas llamadas
-                        if(prioridad_cliente >= this.prioridad){ //este if redundante es solo por precaucion
+                        if(prioridad_cliente > this.prioridad){ //este if redundante es solo por precaucion
                             // solo se guardan las prioridades de las otras maquinas que sean mayores a lo de esta maquina
                             //[mensaje,prioridad,ip]
                             this.priori_ip.add(prioridad_cliente+","+list_messages[2]); //guarda la prioridad y el port del cliente
