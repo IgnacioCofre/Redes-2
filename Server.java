@@ -177,9 +177,46 @@ public class Server implements Runnable
                         this.ip_jefe = list_messages[2];
                         this.proceso_coordinacion = false;
                         System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
+                        // se envia el mensaje de los requerimientos al coordinador
+                        //mensaje [requerimiento,]
+                        Client client4 = new Client("Client 4","requerimiento,"+ip+",mensaje",ip,ip_jefe);
+                        client4.start();
 
-                        //poner una condicion que permita saber que ya hay coordinacion
                     }
+                    else if("actualizacion".equals(list_messages[0]) & coordinador){
+                        //Se debe escribir en el archivo log
+
+
+                        String ip_actualizada = list_messages[1];
+                        if (ip_actualizada.equals(ip)){
+                          Client client5 = new Client("Client 5","requerimiento,"+ip+",mensaje",ip,ip_envio);
+                          client4.start();
+                        }
+                    }
+
+
+                    else if("requerimiento".equals(list_messages[0]) & coordinador){
+                        //realizar las colas!!!!!
+
+                        String ip_envio = list_messages[1];
+
+                        for (int i = 0; i< ips.size(); i++){
+                            if(!ip.equals(ips.get(i))){
+                                try{
+                                    // se envian los cambios a todas las maquinas
+                                    Client client6 = new Client("Client 6","actualizacion,"+ip_envio+",mensaje",ip,ips.get(i));
+                                    client6.start();
+                                }
+                                catch(NumberFormatException a){
+                                    System.out.println("Error al enviar un cliente a la ip "+ips.get(i));
+                                    System.out.println(a);
+                                }
+                            }
+                        }
+
+                        //escribe en su archivo log
+                    }
+
                     else {
                         System.out.print("Header irreconocible:"+list_messages[0]+"\n");
                     }
