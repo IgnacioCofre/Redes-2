@@ -41,10 +41,15 @@ public class Server implements Runnable
     List <String> ips = new ArrayList<>(); //lista de todos los ports
     List <String> dead_server = new ArrayList<>(); //lista de servidores que ya no se encuentran funcionando
     public int tiempo_espera = 0; // si es 0 espera infinito
+    public ArrayList<Doctor> Doctores = new ArrayList<Doctor>(); //lista de doctores
+    public ArrayList<Doctor> Enfermeros = new ArrayList<Doctor>(); //lista de enfermeros
+    public ArrayList<Doctor> Paramedicos = new ArrayList<Doctor>(); //lista de paramedicos
+    public ArrayList<Paciente> Pacientes = new ArrayList<Paciente>(); //lista de pacientes
+    public ArrayList<Requerimientos> Requirements = new ArrayList<Requerimientos>(); //lista de requerimientos
 
     // constructor with port and name
     //new Server("server",ip,prioridad,inicio_llamadas);
-    public Server(String name, String ip, int prioridad, boolean inicio_llamadas, List <String> ips)
+    public Server(String name, String ip, int prioridad, boolean inicio_llamadas, List <String> ips, ArrayList<Doctor> Doctores, ArrayList<Doctor> Enfermeros, ArrayList<Doctor> Paramedicos, ArrayList<Paciente> Pacientes, ArrayList<Requerimientos> Requirements)
     {
         this.ip = ip;
         this.name = name;
@@ -52,6 +57,11 @@ public class Server implements Runnable
         this.prioridad = prioridad;
         this.inicio_llamadas = inicio_llamadas;
         this.ips = ips;
+        this.Doctores = Doctores; 
+        this.Enfermeros = Enfermeros;
+        this.Pacientes = Pacientes;
+        this.Paramedicos = Paramedicos;
+        this.Requirements = Requirements;
     }
 
     @Override
@@ -179,8 +189,13 @@ public class Server implements Runnable
                         System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
                         // se envia el mensaje de los requerimientos al coordinador
                         //mensaje [requerimiento,]
-                        Client client4 = new Client("Client 4","requerimiento,"+ip+",mensaje",ip,ip_jefe);
+                        String mensaje;
+                        mensaje = Requirements.get(0).getMensaje();
+                        System.out.println(mensaje);
+                        Client client4 = new Client("Client 4", "requerimiento," + ip + "," + mensaje, ip, ip_jefe);
                         client4.start();
+                        
+                        
 
                     }
                     else if("actualizacion".equals(list_messages[0]) & coordinador){
@@ -189,14 +204,16 @@ public class Server implements Runnable
 
                         String ip_actualizada = list_messages[1];
                         if (ip_actualizada.equals(ip)){
-                          Client client5 = new Client("Client 5","requerimiento,"+ip+",mensaje",ip,ip_envio);
-                          client4.start();
+                          Client client5 = new Client("Client 5","requerimiento,"+ip+",mensaje",ip,this.ip_jefe);
+                          client5.start();
                         }
                     }
 
 
                     else if("requerimiento".equals(list_messages[0]) & coordinador){
-                        //realizar las colas!!!!!
+
+                        //ArrayList<> ;
+                        //realizar las colas!!!!! 
 
                         String ip_envio = list_messages[1];
 

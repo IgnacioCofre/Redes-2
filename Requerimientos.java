@@ -24,4 +24,10 @@ public class Requerimientos {
         return this.pacientes;
     }
 
+    public String getMensaje(){
+        String mensaje = this.cargo + ":" + this.doc_id + ":" + this.pacientes.toString(); 
+        mensaje = mensaje.replace(",", ";");
+        return mensaje;
+    }
+
 }

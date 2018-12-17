@@ -69,9 +69,6 @@ public class Server_part {
                 Paramedicos.add(unParamedico);
             }
             
-
-
-
             cosa = par.parse(new FileReader("Pacientes.json"));
             jsonObject = (JSONObject) cosa;
             JSONArray paci = (JSONArray) jsonObject.get("Paciente");
@@ -146,7 +143,6 @@ public class Server_part {
                 Requerimientos elRequerimiento = new Requerimientos( requerimiento.get("id").toString(), (String) requerimiento.get("cargo"), requerim);
                 Requirements.add(elRequerimiento);
             }
-            
 
         }
         catch(FileNotFoundException e){
@@ -192,7 +188,7 @@ public class Server_part {
         ips.add("10.6.40.144");
 
         //public Server(int port, List ports_list, String name, int prioridad, boolean inicio_llamadas)
-        Server server1 = new Server("server",ip,prioridad,inicio_llamadas,ips);
+        Server server1 = new Server("server",ip,prioridad,inicio_llamadas,ips,Doctores,Enfermeros,Paramedicos,Pacientes,Requirements);
         server1.start();
         Thread.sleep(2000);
         System.out.println("Tiene 8 segundos para iniciar los demas servidores");
