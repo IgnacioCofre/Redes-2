@@ -191,6 +191,9 @@ public class Server_part {
         Server server1 = new Server("server",ip,prioridad,inicio_llamadas,ips,Doctores,Enfermeros,Paramedicos,Pacientes,Requirements);
         server1.start();
         Thread.sleep(2000);
+        System.out.println("Presione ENTER para iniciar");
+        String enter;
+        enter = scan.nexLine();
         System.out.println("Tiene 8 segundos para iniciar los demas servidores");
         System.out.println(prioridad);
         Thread.sleep(8000);
