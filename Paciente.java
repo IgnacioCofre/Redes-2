@@ -1,4 +1,3 @@
-//package server_part;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -9,16 +8,17 @@ public class Paciente {
     private String nombre;
     private String rut;
     private long edad;
-    private String [] enfermedades;
-    private String [] tratamientos_a;
-    private String [] tratamientos_c;
-    private String [] examenes_re;
-    private String [] examenes_no_re;
-    private String [] medicamentos_suministrados;
-    private String [] medicamentos_recetados;
+    private String[] enfermedades;
+    private String[] tratamientos_a;
+    private String[] tratamientos_c;
+    private String[] examenes_re;
+    private String[] examenes_no_re;
+    private String[] medicamentos_suministrados;
+    private String[] medicamentos_recetados;
 
-
-    public Paciente(long id, String nombre, String rut, long edad, String [] enfermedades, String [] tratamientos_a, String [] tratamientos_c, String [] examenes_re, String [] examenes_no_re, String [] medicamentos_suministrados, String [] medicamentos_recetados ) {
+    public Paciente(long id, String nombre, String rut, long edad, String[] enfermedades, String[] tratamientos_a,
+            String[] tratamientos_c, String[] examenes_re, String[] examenes_no_re, String[] medicamentos_suministrados,
+            String[] medicamentos_recetados) {
         this.id = id;
         this.nombre = nombre;
         this.rut = rut;
@@ -49,31 +49,31 @@ public class Paciente {
         return this.edad;
     }
 
-    public String [] GetEnfermedades() {
+    public String[] GetEnfermedades() {
         return this.enfermedades;
     }
 
-    public String [] GetTratamientosA() {
+    public String[] GetTratamientosA() {
         return this.tratamientos_a;
     }
-    
-    public String [] GetTratamientosC() {
+
+    public String[] GetTratamientosC() {
         return this.tratamientos_c;
     }
-    
-    public String [] GetExamenes() {
+
+    public String[] GetExamenes() {
         return this.examenes_re;
     }
 
-    public String [] GetExamenesNR() {
+    public String[] GetExamenesNR() {
         return this.examenes_no_re;
     }
-    
-    public String [] GetMedicamentos() {
+
+    public String[] GetMedicamentos() {
         return this.medicamentos_suministrados;
     }
 
-    public String [] GetMedicamentos_recetados() {
+    public String[] GetMedicamentos_recetados() {
         return this.medicamentos_recetados;
     }
     // hacer los getters UnU
