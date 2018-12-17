@@ -187,6 +187,7 @@ public class Server implements Runnable
                         //["jefe,"+Integer.toString(prioridad)+","+Integer.toString(port)]
                         this.ip_jefe = list_messages[2];
                         this.proceso_coordinacion = false;
+                        this.coordinador = false;
                         System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
                         // se envia el mensaje de los requerimientos al coordinador
                         //mensaje [requerimiento,]
@@ -198,7 +199,7 @@ public class Server implements Runnable
                         
 
                     }
-                    else if("actualizacion".equals(list_messages[0]) & coordinador){
+                    else if("actualizacion".equals(list_messages[0])){
                         //Se debe escribir en el archivo log
                         String [] mess = list_messages[2].split(":");
                         String quisitos = mess[2].replace("{", "");
