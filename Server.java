@@ -46,6 +46,7 @@ public class Server implements Runnable
     public ArrayList<Doctor> Paramedicos = new ArrayList<Doctor>(); //lista de paramedicos
     public ArrayList<Paciente> Pacientes = new ArrayList<Paciente>(); //lista de pacientes
     public ArrayList<Requerimientos> Requirements = new ArrayList<Requerimientos>(); //lista de requerimientos
+    private int iterante = 1;
 
     // constructor with port and name
     //new Server("server",ip,prioridad,inicio_llamadas);
@@ -191,7 +192,6 @@ public class Server implements Runnable
                         //mensaje [requerimiento,]
                         String mensaje;
                         mensaje = Requirements.get(0).getMensaje();
-                        System.out.println(mensaje);
                         Client client4 = new Client("Client 4", "requerimiento," + ip + "," + mensaje, ip, ip_jefe);
                         client4.start();
                         
@@ -200,19 +200,29 @@ public class Server implements Runnable
                     }
                     else if("actualizacion".equals(list_messages[0]) & coordinador){
                         //Se debe escribir en el archivo log
-
+                        String [] mess = list_messages[2].split(":");
+                        String quisitos = mess[2].replace("{", "");
+                        String [] requi = quisitos.split(";");
+                        for (int i = 0; i < requi.length ;i++){
+                            System.out.println("Acceso del doctor " + mess[1] + "a la ficha del paciente "+ requi[i].split("=")[0] );
+                        }
 
                         String ip_actualizada = list_messages[1];
                         if (ip_actualizada.equals(ip)){
-                          Client client5 = new Client("Client 5","requerimiento,"+ip+",mensaje",ip,this.ip_jefe);
-                          client5.start();
+                            if (iterante < Requirements.size()){
+                                String mensaje;
+                                mensaje = Requirements.get(iterante).getMensaje();
+                                Client client5 = new Client("Client 5", "requerimiento," + ip + "," + mensaje, ip, this.ip_jefe);
+                                client5.start();
+                                iterante++;
+                            }
+                            
                         }
                     }
 
 
                     else if("requerimiento".equals(list_messages[0]) & coordinador){
 
-                        //ArrayList<> ;
                         //realizar las colas!!!!! 
 
                         String ip_envio = list_messages[1];
