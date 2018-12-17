@@ -188,6 +188,7 @@ public class Server implements Runnable
                         this.ip_jefe = list_messages[2];
                         this.proceso_coordinacion = false;
                         this.coordinador = false;
+                        this.tiempo_espera = 18000;
                         System.out.println("La ip del servidor coordinador es: "+list_messages[2]);
                         // se envia el mensaje de los requerimientos al coordinador
                         //mensaje [requerimiento,]
@@ -214,8 +215,8 @@ public class Server implements Runnable
                                 String mensaje;
                                 mensaje = Requirements.get(iterante).getMensaje();
                                 Client client5 = new Client("Client 5", "requerimiento," + ip + "," + mensaje, ip, this.ip_jefe);
-                                client5.start();
                                 iterante++;
+                                client5.start();
                             }
                             
                         }
@@ -231,8 +232,11 @@ public class Server implements Runnable
                         for (int i = 0; i< ips.size(); i++){
                             if(!ip.equals(ips.get(i))){
                                 try{
+                                    String mensaje;
+                                    mensaje = Requirements.get(iterante).getMensaje();
                                     // se envian los cambios a todas las maquinas
-                                    Client client6 = new Client("Client 6","actualizacion,"+ip_envio+",mensaje",ip,ips.get(i));
+                                    Client client6 = new Client("Client 6","actualizacion,"+ip_envio+"," + mensaje,ip,ips.get(i));
+                                    iterante++;
                                     client6.start();
                                 }
                                 catch(NumberFormatException a){
