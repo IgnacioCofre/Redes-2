@@ -193,7 +193,7 @@ public class Server_part {
         Thread.sleep(2000);
         System.out.println("Presione ENTER para iniciar");
         String enter;
-        enter = scan.nexLine();
+        enter = scan.nextLine();
         System.out.println("Tiene 8 segundos para iniciar los demas servidores");
         System.out.println(prioridad);
         Thread.sleep(8000);

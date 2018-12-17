@@ -223,6 +223,7 @@ public class Server implements Runnable
 
                     else if("requerimiento".equals(list_messages[0]) & coordinador){
 
+                        
                         //realizar las colas!!!!! 
 
                         String ip_envio = list_messages[1];
