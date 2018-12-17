@@ -233,18 +233,26 @@ public class Server implements Runnable
                         for (int i = 0; i< ips.size(); i++){
                             if(!ip.equals(ips.get(i))){
                                 try{
+                                    if (iterante < Requirements.size()){
                                     String mensaje;
                                     mensaje = Requirements.get(iterante).getMensaje();
                                     // se envian los cambios a todas las maquinas
-                                    Client client6 = new Client("Client 6","actualizacion,"+ip_envio+"," + mensaje,ip,ips.get(i));
+                                    Client client6 = new Client("Client 6","actualizacion,"+ip_envio+ "," + mensaje,ip,ips.get(i));
                                     iterante++;
                                     client6.start();
+                                    }
                                 }
                                 catch(NumberFormatException a){
                                     System.out.println("Error al enviar un cliente a la ip "+ips.get(i));
                                     System.out.println(a);
                                 }
                             }
+                        }
+                        String[] mess = list_messages[2].split(":");
+                        String quisitos = mess[2].replace("{", "");
+                        String[] requi = quisitos.split(";");
+                        for (int i = 0; i < requi.length; i++) {
+                            System.out.println("MILOG: Acceso del doctor " + mess[1] + "a la ficha del paciente " + requi[i].split("=")[0]);
                         }
 
                         //escribe en su archivo log
